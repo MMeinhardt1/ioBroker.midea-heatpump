@@ -1,0 +1,46 @@
+// Erweitert den AdapterConfig-Typ um die native-Konfiguration aus io-package.json (nur fuer den Typecheck).
+
+declare global {
+    /** modbus-serial v8 liefert keinen Konstruktor-Typ fuer den CommonJS-Export */
+    type ModbusRTUConstructor = new () => import('modbus-serial');
+
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace ioBroker {
+        interface AdapterConfig {
+            model: string;
+            connectionType: 'tcprtu' | 'tcp' | 'serial';
+            host: string;
+            port: number;
+            unitId: number;
+            serialPort: string;
+            baudRate: number;
+            parity: string;
+            stopBits: number;
+            pollInterval: number;
+            settingsInterval: number;
+            timeout: number;
+            requestDelay: number;
+            retries: number;
+            maxGap: number;
+            maxBlock: number;
+            createRawStates: boolean;
+            allowWrite: boolean;
+            hasTbh: boolean;
+            hasZone2: boolean;
+            meterStateId: string;
+            meterFactor: number;
+            heatMeterStateId: string;
+            heatMeterFactor: number;
+            heatPowerStateId: string;
+            fastPollStateId: string;
+            fastPollFollowUpMin: number;
+            minKwhCop: number;
+            diMargin: number;
+            diWeekday: number;
+            diTime: string;
+            diWindowMin: number;
+        }
+    }
+}
+
+export {};

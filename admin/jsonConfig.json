@@ -1,0 +1,574 @@
+{
+  "i18n": true,
+  "type": "tabs",
+  "items": {
+    "tabConnection": {
+      "type": "panel",
+      "label": "Connection",
+      "items": {
+        "_hdrModel": {
+          "type": "header",
+          "text": "Heat pump model",
+          "size": 4,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "model": {
+          "type": "select",
+          "label": "Model",
+          "help": "No automatic detection possible – select the model. The adapter checks the unit capacity register at start.",
+          "options": [
+            {
+              "label": "Midea MHC-V8WD2RN7 (R290, 8 kW, Monoblock)",
+              "value": "midea-mhc-v8wd2rn7"
+            }
+          ],
+          "xs": 12,
+          "sm": 12,
+          "md": 8,
+          "lg": 8,
+          "xl": 8
+        },
+        "_hdrConn": {
+          "type": "header",
+          "text": "Connection",
+          "size": 4,
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "connectionType": {
+          "type": "select",
+          "label": "Connection type",
+          "options": [
+            {
+              "label": "RTU over TCP (e.g. ESP bridge / stream_server)",
+              "value": "tcprtu"
+            },
+            {
+              "label": "Modbus TCP",
+              "value": "tcp"
+            },
+            {
+              "label": "Serial RS-485",
+              "value": "serial"
+            }
+          ],
+          "xs": 12,
+          "sm": 12,
+          "md": 6,
+          "lg": 6,
+          "xl": 6
+        },
+        "unitId": {
+          "type": "number",
+          "label": "Modbus unit ID",
+          "min": 1,
+          "max": 247,
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "host": {
+          "type": "text",
+          "label": "IP address / host",
+          "hidden": "data.connectionType === 'serial'",
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 6,
+          "lg": 6,
+          "xl": 6
+        },
+        "port": {
+          "type": "number",
+          "label": "Port",
+          "min": 1,
+          "max": 65535,
+          "hidden": "data.connectionType === 'serial'",
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "serialPort": {
+          "type": "text",
+          "label": "Serial port",
+          "hidden": "data.connectionType !== 'serial'",
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 6,
+          "lg": 6,
+          "xl": 6
+        },
+        "baudRate": {
+          "type": "select",
+          "label": "Baud rate",
+          "hidden": "data.connectionType !== 'serial'",
+          "options": [
+            {
+              "label": "2400",
+              "value": 2400
+            },
+            {
+              "label": "4800",
+              "value": 4800
+            },
+            {
+              "label": "9600",
+              "value": 9600
+            },
+            {
+              "label": "19200",
+              "value": 19200
+            },
+            {
+              "label": "38400",
+              "value": 38400
+            }
+          ],
+          "xs": 12,
+          "sm": 12,
+          "md": 2,
+          "lg": 2,
+          "xl": 2
+        },
+        "parity": {
+          "type": "select",
+          "label": "Parity",
+          "hidden": "data.connectionType !== 'serial'",
+          "options": [
+            {
+              "label": "none",
+              "value": "none"
+            },
+            {
+              "label": "even",
+              "value": "even"
+            },
+            {
+              "label": "odd",
+              "value": "odd"
+            }
+          ],
+          "xs": 12,
+          "sm": 12,
+          "md": 2,
+          "lg": 2,
+          "xl": 2
+        },
+        "stopBits": {
+          "type": "select",
+          "label": "Stop bits",
+          "hidden": "data.connectionType !== 'serial'",
+          "options": [
+            {
+              "label": "1",
+              "value": 1
+            },
+            {
+              "label": "2",
+              "value": 2
+            }
+          ],
+          "xs": 12,
+          "sm": 12,
+          "md": 2,
+          "lg": 2,
+          "xl": 2
+        },
+        "_hdrPoll": {
+          "type": "header",
+          "text": "Polling",
+          "size": 4,
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "pollInterval": {
+          "type": "number",
+          "label": "Poll interval (s)",
+          "min": 5,
+          "max": 300,
+          "help": "Live values (registers below 200)",
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "settingsInterval": {
+          "type": "number",
+          "label": "Settings interval (s)",
+          "min": 60,
+          "max": 86400,
+          "help": "Settings registers (200 and above) are read less often",
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "timeout": {
+          "type": "number",
+          "label": "Response timeout (ms)",
+          "min": 500,
+          "max": 10000,
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "requestDelay": {
+          "type": "number",
+          "label": "Pause between requests (ms)",
+          "min": 0,
+          "max": 2000,
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "retries": {
+          "type": "number",
+          "label": "Retries without answer",
+          "min": 0,
+          "max": 3,
+          "newLine": true,
+          "help": "A missing answer is repeated without closing the connection",
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "maxGap": {
+          "type": "number",
+          "label": "Max. address gap in a block",
+          "min": 0,
+          "max": 10,
+          "help": "0 recommended for Midea (unknown gaps may be rejected)",
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        },
+        "maxBlock": {
+          "type": "number",
+          "label": "Max. registers per request",
+          "min": 1,
+          "max": 120,
+          "xs": 12,
+          "sm": 12,
+          "md": 3,
+          "lg": 3,
+          "xl": 3
+        }
+      }
+    },
+    "tabFeatures": {
+      "type": "panel",
+      "label": "Installation & writing",
+      "items": {
+        "_hdrInst": {
+          "type": "header",
+          "text": "Installation",
+          "size": 4,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "hasTbh": {
+          "type": "checkbox",
+          "label": "Tank heater (TBH) installed",
+          "xs": 12,
+          "sm": 12,
+          "md": 6,
+          "lg": 6,
+          "xl": 6
+        },
+        "hasZone2": {
+          "type": "checkbox",
+          "label": "Zone 2 installed",
+          "xs": 12,
+          "sm": 12,
+          "md": 6,
+          "lg": 6,
+          "xl": 6
+        },
+        "createRawStates": {
+          "type": "checkbox",
+          "label": "Create raw values for unmapped registers",
+          "newLine": true,
+          "help": "Under 'Register.*'; mapped registers appear only under their named data point",
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "_hdrWrite": {
+          "type": "header",
+          "text": "Write access",
+          "size": 4,
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "allowWrite": {
+          "type": "checkbox",
+          "label": "Allow writing to the heat pump",
+          "help": "Setpoints, DHW, zone 1, heating curve, silent/ECO mode. Values are checked against limits; the register is read back after writing.",
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        }
+      }
+    },
+    "tabMeters": {
+      "type": "panel",
+      "label": "Meters",
+      "items": {
+        "_hdrM": {
+          "type": "header",
+          "text": "Electricity meter",
+          "size": 4,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "meterStateId": {
+          "type": "objectId",
+          "label": "Meter reading heat pump (kWh)",
+          "help": "Calibrated meter; used for consumption per operating mode",
+          "xs": 12,
+          "sm": 12,
+          "md": 8,
+          "lg": 8,
+          "xl": 8
+        },
+        "meterFactor": {
+          "type": "number",
+          "label": "Factor to kWh",
+          "help": "1 = kWh, 0.001 = Wh",
+          "xs": 12,
+          "sm": 12,
+          "md": 4,
+          "lg": 4,
+          "xl": 4
+        },
+        "_hdrH": {
+          "type": "header",
+          "text": "Heat meter",
+          "size": 4,
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "heatMeterStateId": {
+          "type": "objectId",
+          "label": "Heat energy (kWh)",
+          "xs": 12,
+          "sm": 12,
+          "md": 8,
+          "lg": 8,
+          "xl": 8
+        },
+        "heatMeterFactor": {
+          "type": "number",
+          "label": "Factor to kWh",
+          "help": "1 = kWh, 1000 = MWh",
+          "xs": 12,
+          "sm": 12,
+          "md": 4,
+          "lg": 4,
+          "xl": 4
+        },
+        "heatPowerStateId": {
+          "type": "objectId",
+          "label": "Heat power (kW, optional)",
+          "help": "Improves splitting heat between heating and DHW",
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 8,
+          "lg": 8,
+          "xl": 8
+        },
+        "fastPollStateId": {
+          "type": "objectId",
+          "label": "Fast-poll command (boolean, optional)",
+          "help": "Set to true while the heat pump runs, e.g. mqtt.0.mbus-meter.cmd.schnellabfrage",
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 8,
+          "lg": 8,
+          "xl": 8
+        },
+        "fastPollFollowUpMin": {
+          "type": "number",
+          "label": "Follow-up (min)",
+          "min": 0,
+          "max": 60,
+          "xs": 12,
+          "sm": 12,
+          "md": 4,
+          "lg": 4,
+          "xl": 4
+        }
+      }
+    },
+    "tabStats": {
+      "type": "panel",
+      "label": "Statistics",
+      "items": {
+        "_hdrS": {
+          "type": "header",
+          "text": "Statistics",
+          "size": 4,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "minKwhCop": {
+          "type": "number",
+          "label": "Min. daily consumption for COP (kWh)",
+          "min": 0,
+          "max": 5,
+          "step": 0.1,
+          "xs": 12,
+          "sm": 12,
+          "md": 6,
+          "lg": 6,
+          "xl": 6
+        },
+        "_hdrDi": {
+          "type": "header",
+          "text": "Disinfection detection",
+          "size": 4,
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "_diText": {
+          "type": "staticText",
+          "text": "The heat pump does not report a running disinfection. It is detected when a DHW charge raises the tank above the DHW setpoint plus margin, or when a charge starts at the scheduled time.",
+          "xs": 12,
+          "sm": 12,
+          "md": 12,
+          "lg": 12,
+          "xl": 12
+        },
+        "diMargin": {
+          "type": "number",
+          "label": "Margin above DHW setpoint (K)",
+          "min": 0,
+          "max": 20,
+          "newLine": true,
+          "xs": 12,
+          "sm": 12,
+          "md": 4,
+          "lg": 4,
+          "xl": 4
+        },
+        "diWeekday": {
+          "type": "select",
+          "label": "Scheduled weekday",
+          "options": [
+            {
+              "label": "unknown",
+              "value": -1
+            },
+            {
+              "label": "Sunday",
+              "value": 0
+            },
+            {
+              "label": "Monday",
+              "value": 1
+            },
+            {
+              "label": "Tuesday",
+              "value": 2
+            },
+            {
+              "label": "Wednesday",
+              "value": 3
+            },
+            {
+              "label": "Thursday",
+              "value": 4
+            },
+            {
+              "label": "Friday",
+              "value": 5
+            },
+            {
+              "label": "Saturday",
+              "value": 6
+            }
+          ],
+          "xs": 12,
+          "sm": 12,
+          "md": 4,
+          "lg": 4,
+          "xl": 4
+        },
+        "diTime": {
+          "type": "text",
+          "label": "Scheduled time (HH:MM)",
+          "xs": 12,
+          "sm": 12,
+          "md": 2,
+          "lg": 2,
+          "xl": 2
+        },
+        "diWindowMin": {
+          "type": "number",
+          "label": "Window (min)",
+          "min": 5,
+          "max": 180,
+          "xs": 12,
+          "sm": 12,
+          "md": 2,
+          "lg": 2,
+          "xl": 2
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+    "common": {
+        "name": "midea-heatpump",
+        "version": "0.1.0",
+        "news": {
+            "0.1.0": {
+                "en": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "de": "Erstveröffentlichung: Midea MHC-V8WD2RN7, Statistik, Schreibzugriff",
+                "ru": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "pt": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "nl": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "fr": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "it": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "es": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "pl": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "uk": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
+                "zh-cn": "initial release: Midea MHC-V8WD2RN7, statistics, write support"
+            }
+        },
+        "titleLang": {
+            "en": "Midea heat pump",
+            "de": "Midea Wärmepumpe",
+            "ru": "Midea heat pump",
+            "pt": "Midea heat pump",
+            "nl": "Midea heat pump",
+            "fr": "Midea heat pump",
+            "it": "Midea heat pump",
+            "es": "Midea heat pump",
+            "pl": "Midea heat pump",
+            "uk": "Midea heat pump",
+            "zh-cn": "Midea heat pump"
+        },
+        "desc": {
+            "en": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "de": "Midea-Luft-Wasser-Wärmepumpen über Modbus (RTU über TCP, Modbus TCP, RS-485) mit Tagesstatistik",
+            "ru": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "pt": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "nl": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "fr": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "it": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "es": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "pl": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "uk": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics",
+            "zh-cn": "Midea air-to-water heat pumps via Modbus (RTU over TCP, Modbus TCP, RS-485) with daily statistics"
+        },
+        "authors": [
+            "MMeinhardt1"
+        ],
+        "keywords": [
+            "midea",
+            "heatpump",
+            "waermepumpe",
+            "modbus",
+            "m-thermal"
+        ],
+        "platform": "Javascript/Node.js",
+        "icon": "midea-heatpump.png",
+        "extIcon": "https://raw.githubusercontent.com/MMeinhardt1/ioBroker.midea-heatpump/main/admin/midea-heatpump.png",
+        "enabled": true,
+        "readme": "https://github.com/MMeinhardt1/ioBroker.midea-heatpump/blob/main/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "climate-control",
+        "compact": true,
+        "adminUI": {
+            "config": "json"
+        },
+        "supportCustoms": false,
+        "tier": 2,
+        "connectionType": "local",
+        "dataSource": "poll",
+        "dependencies": [
+            {
+                "js-controller": ">=6.0.11"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=8.0.0"
+            }
+        ],
+        "licenseInformation": {
+            "license": "MIT",
+            "type": "free"
+        }
+    },
+    "native": {
+        "model": "midea-mhc-v8wd2rn7",
+        "connectionType": "tcprtu",
+        "host": "",
+        "port": 502,
+        "unitId": 1,
+        "serialPort": "/dev/ttyUSB0",
+        "baudRate": 9600,
+        "parity": "none",
+        "stopBits": 1,
+        "pollInterval": 10,
+        "settingsInterval": 300,
+        "timeout": 3000,
+        "requestDelay": 250,
+        "retries": 1,
+        "maxGap": 0,
+        "maxBlock": 60,
+        "createRawStates": true,
+        "allowWrite": false,
+        "hasTbh": false,
+        "hasZone2": false,
+        "meterStateId": "",
+        "meterFactor": 1,
+        "heatMeterStateId": "",
+        "heatMeterFactor": 1,
+        "heatPowerStateId": "",
+        "fastPollStateId": "",
+        "fastPollFollowUpMin": 3,
+        "minKwhCop": 0.2,
+        "diMargin": 2,
+        "diWeekday": -1,
+        "diTime": "",
+        "diWindowMin": 30
+    },
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "Verbindung zur Wärmepumpe",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
+    ]
+}
