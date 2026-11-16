@@ -2,76 +2,99 @@
 
 # ioBroker.midea-heatpump
 
-Adapter für Midea-Luft-Wasser-Wärmepumpen (M-Thermal-Protokoll) über Modbus – direkt per RS-485, per Modbus TCP oder als RTU-Telegramme über TCP (z. B. ESP32-Bridge mit `stream_server`).
+**[Deutsche Version](README.de.md)**
 
-## Unterstützte Modelle
+ioBroker adapter for Midea air-to-water heat pumps (M-Thermal protocol) via Modbus – directly over RS-485, via Modbus TCP, or as RTU frames over TCP (e.g. an ESP32 bridge running `stream_server`).
 
-| Modell | Status |
+## Supported models
+
+| Model | Status |
 |---|---|
-| Midea MHC-V8WD2RN7 (R290, 8 kW, Monoblock, Zusatzheizung 3/6/9 kW) | getestet |
+| Midea MHC-V8WD2RN7 (R290, 8 kW, monoblock, backup heater 3/6/9 kW) | tested |
 
-Eine automatische Modellerkennung ist über Modbus nicht möglich, das Modell wird in der Instanz-Konfiguration gewählt. Beim Start prüft der Adapter das Register „Unit capacity“ (123) und warnt, wenn es nicht zum gewählten Modell passt.
+The model cannot be detected automatically via Modbus, so you select it in the instance configuration. At startup the adapter checks the "unit capacity" register (123) and logs a warning if it does not match the selected model.
 
-### Weitere Modelle ergänzen
+### Adding more models
 
-1. Datei unter `lib/models/` anlegen. Gemeinsame Register und Zuordnungen kommen aus `midea-common.js`, mit `extendModel()` werden nur die Abweichungen beschrieben (Leistung, Stufen der Zusatzheizung, ungültige Adressen, zusätzliche oder entfallende Register).
-2. Das Modell in `lib/models/index.js` eintragen.
-3. Die Auswahl im Dropdown in `admin/jsonConfig.json` ergänzen.
+1. Create a file in `lib/models/`. Common registers and mappings come from `midea-common.js`; with `extendModel()` you describe only the differences (capacity, backup heater stages, invalid addresses, additional or missing registers).
+2. Add the model to `lib/models/index.js`.
+3. Add it to the dropdown in `admin/jsonConfig.json`.
 
-## Funktionen
+## Features
 
-- **Sprechende Datenpunkte**: Temperaturen, Betrieb, Status-Bits, Einstellungen des Servicemenüs, Heizkurve. Ein Register erscheint genau einmal. Register ohne Zuordnung landen optional als Rohwert unter `Register.*`.
-- **Robuste Abfrage**:
-  - Messwerte (Register < 200) werden jeden Zyklus gelesen, Einstellungen (≥ 200) seltener.
-  - Bleibt eine Antwort aus, wird die Anfrage wiederholt, ohne die Verbindung zu trennen. Neu verbunden wird erst nach 3 Anfragen in Folge ohne Antwort.
-  - Zwischen zwei Anfragen liegt eine einstellbare Pause.
-  - Vom Gerät abgelehnte Adressen („Illegal Data Address“) lernt der Adapter selbst und liest sie künftig nicht mehr (`info.invalidAddresses`).
-- **Statistik** (bleibt bei einem Neustart erhalten):
-  - Stromverbrauch je Betriebsart (Heizen/Warmwasser/Standby) aus einem geeichten Stromzähler
-  - Wärme je Betriebsart aus einem Wärmemengenzähler, aufgeteilt nach Leistung bzw. Laufzeit
-  - COP je Tag und Betriebsart
-  - Tageswerte der internen Gerätezähler, getrennt unter `Tageswerte.WP intern`
-  - Verdichterstarts und -laufzeit je Tag und Betriebsart, mittlere Laufzeit je Start
-  - Heizstab: aktuelle Leistung, geschätzter Strom und Laufzeit je Tag
-  - Desinfektionserkennung (die WP meldet nicht, ob eine Desinfektion läuft)
-  - Soll-Vorlauf aus Heizkurve oder festem Sollwert, Spreizung Vorlauf/Rücklauf
-- **Schnellabfrage des Wärmemengenzählers** (optional): Ein boolescher Datenpunkt wird gesetzt, solange die WP heizt oder Warmwasser macht, plus Nachlauf.
-- **Schreiben** (nur wenn in der Konfiguration erlaubt):
-  - Warmwasser-Soll
-  - fester Soll-Vorlauf Zone 1 (Grenzen aus Reg. 203/204)
-  - Warmwasser erzwingen
-  - Warmwasser ein/aus
-  - Zone 1 ein/aus
-  - Heizkurve
-  - Leisemodus und Leisemodus-Stufe
-  - ECO-Modus
-  - Klimakurve Zone 1
-  - eigene Heizkurve (T1SetH1/2, T4H1/2)
+- **Named data points**: temperatures, operation, status bits, service menu settings, heating curve. Each register appears exactly once. Registers without a mapping can optionally be created as raw values under `Register.*`.
+- **Robust polling**:
+  - Live values (registers < 200) are read every cycle, settings (≥ 200) less often.
+  - If an answer is missing, the request is repeated without closing the connection. The adapter only reconnects after 3 unanswered requests in a row.
+  - The pause between two requests is configurable.
+  - Addresses rejected by the device ("Illegal Data Address") are learned and skipped from then on (`info.invalidAddresses`).
+- **Statistics** (persist across restarts):
+  - Electricity consumption per operating mode (heating / hot water / standby) from a calibrated electricity meter
+  - Heat per operating mode from a heat meter, split by power or runtime
+  - COP per day and operating mode
+  - Daily values of the internal device counters, kept separately under `Tageswerte.WP intern`
+  - Compressor starts and runtime per day and operating mode, average runtime per start
+  - Backup heater: current power, estimated energy and runtime per day
+  - Disinfection detection (the heat pump does not report a running disinfection)
+  - Flow setpoint from heating curve or fixed setpoint, flow/return temperature difference
+- **Heat meter fast polling** (optional): a boolean data point is set while the heat pump is heating or producing hot water, plus a follow-up time.
+- **Writing** (only if enabled in the configuration):
+  - DHW setpoint
+  - fixed flow setpoint zone 1 (limits from registers 203/204)
+  - force DHW
+  - DHW on/off
+  - zone 1 on/off
+  - heating curve
+  - silent mode and silent mode level
+  - ECO mode
+  - climate curve zone 1
+  - custom heating curve (T1SetH1/2, T4H1/2)
 
-  Werte außerhalb der Grenzen werden abgelehnt. Bitfelder werden frisch gelesen, ein Bit geändert und zurückgeschrieben. Nach jedem Schreiben wird das Register zurückgelesen und der Datenpunkt bestätigt.
+  Values outside the limits are rejected. Bit fields are read fresh, one bit is changed and the value is written back. After every write the register is read back and the data point is acknowledged.
 
-## Konfiguration (Beispiel ESP-Bridge)
+Data point names are in German (e.g. `Temperaturen.Vorlauf` = flow temperature, `Tageswerte` = daily values), matching the original Node-RED flow this adapter replaces.
 
-| Einstellung | Wert |
+## Configuration (example: ESP bridge)
+
+| Setting | Value |
 |---|---|
-| Verbindungsart | RTU über TCP |
-| IP / Port | IP der Bridge, Port des stream_server (z. B. 5021) |
-| Geräteadresse | 1 |
-| Abfrageintervall | 10 s |
-| Einstellungs-Intervall | 300 s |
-| Antwort-Timeout | 3000 ms |
-| Pause zwischen Anfragen | 250 ms |
-| Wiederholungen | 1 |
-| Maximale Adresslücke | 0 |
+| Connection type | RTU over TCP |
+| IP / port | IP of the bridge, stream_server port (e.g. 5021) |
+| Unit ID | 1 |
+| Poll interval | 10 s |
+| Settings interval | 300 s |
+| Response timeout | 3000 ms |
+| Pause between requests | 250 ms |
+| Retries | 1 |
+| Max. address gap | 0 |
 
-Hinweis: Der stream_server nimmt pro Port in der Regel nur einen Client sinnvoll an. Der Modbus-Adapter darf dann nicht gleichzeitig auf denselben Port zugreifen.
+Note: a stream_server usually serves only one client per port. The ioBroker modbus adapter must not access the same port at the same time.
+
+## Migration from the Node-RED flow
+
+`tools/migration_von_flow.js` (ioBroker JavaScript script) copies the current daily values and the InfluxDB settings, keeping the same aliases, from `0_userdata.0.Wärmepumpe.*` to the adapter's data points. Grafana keeps working unchanged. Run it once with `DRY_RUN = true` first.
+
+## Installation
+
+```bash
+iob url https://github.com/MMeinhardt1/ioBroker.midea-heatpump
+iob add midea-heatpump
+```
 
 ## Changelog
 
 ### 0.1.0 (2026-11-15)
 
-- Erstveröffentlichung: Midea MHC-V8WD2RN7, Statistik aus dem bisherigen Node-RED-Flow, Schreibzugriff mit Grenzprüfung
+- Initial release: Midea MHC-V8WD2RN7, statistics from the previous Node-RED flow, write support with limit checks
 
 ## License
 
-MIT License, Copyright (c) 2026 MMeinhardt1
+MIT License
+
+Copyright (c) 2026 MMeinhardt1
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
