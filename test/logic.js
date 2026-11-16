@@ -35,13 +35,33 @@ describe('Modelle', () => {
 describe('Lesebloecke', () => {
     const r = (addr, type = 'U16') => ({ addr, key: `r${addr}`, type, group: 'live', desc: '' });
     it('fasst zusammenhaengende Register zusammen, auch 32 Bit', () => {
-        const b = buildBlocks([r(143, 'U32'), r(145, 'U32'), r(148), r(150)], { maxGap: 0, maxQty: 60, invalid: new Set() });
-        assert.deepStrictEqual(b.map(x => [x.start, x.qty]), [[143, 4], [148, 1], [150, 1]]);
+        const b = buildBlocks([r(143, 'U32'), r(145, 'U32'), r(148), r(150)], {
+            maxGap: 0,
+            maxQty: 60,
+            invalid: new Set(),
+        });
+        assert.deepStrictEqual(
+            b.map(x => [x.start, x.qty]),
+            [
+                [143, 4],
+                [148, 1],
+                [150, 1],
+            ],
+        );
     });
     it('ueberbrueckt Luecken nur bis maxGap und nie ueber ungueltige Adressen', () => {
         const regs = [r(210), r(212), r(213), r(215), r(216)];
-        assert.deepStrictEqual(buildBlocks(regs, { maxGap: 2, maxQty: 60, invalid: new Set() }).map(x => [x.start, x.qty]), [[210, 7]]);
-        assert.deepStrictEqual(buildBlocks(regs, { maxGap: 2, maxQty: 60, invalid: new Set([214]) }).map(x => [x.start, x.qty]), [[210, 4], [215, 2]]);
+        assert.deepStrictEqual(
+            buildBlocks(regs, { maxGap: 2, maxQty: 60, invalid: new Set() }).map(x => [x.start, x.qty]),
+            [[210, 7]],
+        );
+        assert.deepStrictEqual(
+            buildBlocks(regs, { maxGap: 2, maxQty: 60, invalid: new Set([214]) }).map(x => [x.start, x.qty]),
+            [
+                [210, 4],
+                [215, 2],
+            ],
+        );
     });
     it('dekodiert Vorzeichen, 32 Bit und Faktor', () => {
         assert.strictEqual(decode(r(107, 'S16'), [65531], 107).value, -5);

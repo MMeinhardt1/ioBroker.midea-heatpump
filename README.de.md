@@ -8,8 +8,8 @@ Adapter für Midea-Luft-Wasser-Wärmepumpen (M-Thermal-Protokoll) über Modbus �
 
 ## Unterstützte Modelle
 
-| Modell | Status |
-|---|---|
+| Modell                                                             | Status   |
+| ------------------------------------------------------------------ | -------- |
 | Midea MHC-V8WD2RN7 (R290, 8 kW, Monoblock, Zusatzheizung 3/6/9 kW) | getestet |
 
 Eine automatische Modellerkennung ist über Modbus nicht möglich, das Modell wird in der Instanz-Konfiguration gewählt. Beim Start prüft der Adapter das Register „Unit capacity“ (123) und warnt, wenn es nicht zum gewählten Modell passt.
@@ -24,53 +24,63 @@ Eine automatische Modellerkennung ist über Modbus nicht möglich, das Modell wi
 
 - **Sprechende Datenpunkte**: Temperaturen, Betrieb, Status-Bits, Einstellungen des Servicemenüs, Heizkurve. Ein Register erscheint genau einmal. Register ohne Zuordnung landen optional als Rohwert unter `Register.*`.
 - **Robuste Abfrage**:
-  - Messwerte (Register < 200) werden jeden Zyklus gelesen, Einstellungen (≥ 200) seltener.
-  - Bleibt eine Antwort aus, wird die Anfrage wiederholt, ohne die Verbindung zu trennen. Neu verbunden wird erst nach 3 Anfragen in Folge ohne Antwort.
-  - Zwischen zwei Anfragen liegt eine einstellbare Pause.
-  - Vom Gerät abgelehnte Adressen („Illegal Data Address“) lernt der Adapter selbst und liest sie künftig nicht mehr (`info.invalidAddresses`).
+    - Messwerte (Register < 200) werden jeden Zyklus gelesen, Einstellungen (≥ 200) seltener.
+    - Bleibt eine Antwort aus, wird die Anfrage wiederholt, ohne die Verbindung zu trennen. Neu verbunden wird erst nach 3 Anfragen in Folge ohne Antwort.
+    - Zwischen zwei Anfragen liegt eine einstellbare Pause.
+    - Vom Gerät abgelehnte Adressen („Illegal Data Address“) lernt der Adapter selbst und liest sie künftig nicht mehr (`info.invalidAddresses`).
 - **Statistik** (bleibt bei einem Neustart erhalten):
-  - Stromverbrauch je Betriebsart (Heizen/Warmwasser/Standby) aus einem geeichten Stromzähler
-  - Wärme je Betriebsart aus einem Wärmemengenzähler, aufgeteilt nach Leistung bzw. Laufzeit
-  - COP je Tag und Betriebsart
-  - Tageswerte der internen Gerätezähler, getrennt unter `Tageswerte.WP intern`
-  - Verdichterstarts und -laufzeit je Tag und Betriebsart, mittlere Laufzeit je Start
-  - Heizstab: aktuelle Leistung, geschätzter Strom und Laufzeit je Tag
-  - Desinfektionserkennung (die WP meldet nicht, ob eine Desinfektion läuft)
-  - Soll-Vorlauf aus Heizkurve oder festem Sollwert, Spreizung Vorlauf/Rücklauf
+    - Stromverbrauch je Betriebsart (Heizen/Warmwasser/Standby) aus einem geeichten Stromzähler
+    - Wärme je Betriebsart aus einem Wärmemengenzähler, aufgeteilt nach Leistung bzw. Laufzeit
+    - COP je Tag und Betriebsart
+    - Tageswerte der internen Gerätezähler, getrennt unter `Tageswerte.WP intern`
+    - Verdichterstarts und -laufzeit je Tag und Betriebsart, mittlere Laufzeit je Start
+    - Heizstab: aktuelle Leistung, geschätzter Strom und Laufzeit je Tag
+    - Desinfektionserkennung (die WP meldet nicht, ob eine Desinfektion läuft)
+    - Soll-Vorlauf aus Heizkurve oder festem Sollwert, Spreizung Vorlauf/Rücklauf
 - **Schnellabfrage des Wärmemengenzählers** (optional): Ein boolescher Datenpunkt wird gesetzt, solange die WP heizt oder Warmwasser macht, plus Nachlauf.
 - **Schreiben** (nur wenn in der Konfiguration erlaubt):
-  - Warmwasser-Soll
-  - fester Soll-Vorlauf Zone 1 (Grenzen aus Reg. 203/204)
-  - Warmwasser erzwingen
-  - Warmwasser ein/aus
-  - Zone 1 ein/aus
-  - Heizkurve
-  - Leisemodus und Leisemodus-Stufe
-  - ECO-Modus
-  - Klimakurve Zone 1
-  - eigene Heizkurve (T1SetH1/2, T4H1/2)
+    - Warmwasser-Soll
+    - fester Soll-Vorlauf Zone 1 (Grenzen aus Reg. 203/204)
+    - Warmwasser erzwingen
+    - Warmwasser ein/aus
+    - Zone 1 ein/aus
+    - Heizkurve
+    - Leisemodus und Leisemodus-Stufe
+    - ECO-Modus
+    - Klimakurve Zone 1
+    - eigene Heizkurve (T1SetH1/2, T4H1/2)
 
-  Werte außerhalb der Grenzen werden abgelehnt. Bitfelder werden frisch gelesen, ein Bit geändert und zurückgeschrieben. Nach jedem Schreiben wird das Register zurückgelesen und der Datenpunkt bestätigt.
+    Werte außerhalb der Grenzen werden abgelehnt. Bitfelder werden frisch gelesen, ein Bit geändert und zurückgeschrieben. Nach jedem Schreiben wird das Register zurückgelesen und der Datenpunkt bestätigt.
 
 ## Konfiguration (Beispiel ESP-Bridge)
 
-| Einstellung | Wert |
-|---|---|
-| Verbindungsart | RTU über TCP |
-| IP / Port | IP der Bridge, Port des stream_server (z. B. 5021) |
-| Geräteadresse | 1 |
-| Abfrageintervall | 10 s |
-| Einstellungs-Intervall | 300 s |
-| Antwort-Timeout | 3000 ms |
-| Pause zwischen Anfragen | 250 ms |
-| Wiederholungen | 1 |
-| Maximale Adresslücke | 0 |
+| Einstellung             | Wert                                               |
+| ----------------------- | -------------------------------------------------- |
+| Verbindungsart          | RTU über TCP                                       |
+| IP / Port               | IP der Bridge, Port des stream_server (z. B. 5021) |
+| Geräteadresse           | 1                                                  |
+| Abfrageintervall        | 10 s                                               |
+| Einstellungs-Intervall  | 300 s                                              |
+| Antwort-Timeout         | 3000 ms                                            |
+| Pause zwischen Anfragen | 250 ms                                             |
+| Wiederholungen          | 1                                                  |
+| Maximale Adresslücke    | 0                                                  |
 
 Hinweis: Der stream_server nimmt pro Port in der Regel nur einen Client sinnvoll an. Der Modbus-Adapter darf dann nicht gleichzeitig auf denselben Port zugreifen.
 
 ## Umzug vom Node-RED-Flow
 
 Das Skript `tools/migration_von_flow.js` (ioBroker-JavaScript) überträgt die heutigen Tageswerte und die InfluxDB-Einstellungen mit denselben Aliasen von `0_userdata.0.Wärmepumpe.*` auf die Datenpunkte des Adapters. Grafana läuft dadurch unverändert weiter. Zuerst einmal mit `DRY_RUN = true` ausführen.
+
+## Fehlersuche
+
+Mit der Logstufe **debug** der Instanz siehst du:
+
+- jede Modbus-Anfrage mit Antwortzeit (`FC03 104+16: ok in 87 ms`), ausgebliebene Antworten und Wiederholungen,
+- eine Zusammenfassung je Abfragezyklus (`Cycle: 22/22 blocks ok, 5 values changed, 1450 ms, slowest answer 120 ms`),
+- mit der Option _Rohwerte der Register ins Log schreiben_ zusätzlich jeden empfangenen Block als Rohzahlen.
+
+Die Datenpunkte unter `info.*` (Anfragen, Timeouts, Wiederholungen, Zyklusdauer, längste Antwortzeit) gibt es immer.
 
 ## Installation
 
@@ -80,6 +90,13 @@ iob add midea-heatpump
 ```
 
 ## Changelog
+
+### 0.2.0 (2026-11-16)
+
+- Ausführliches Debug-Log: Antwortzeit jeder Anfrage, eine Zusammenfassung je Abfragezyklus, optional die Rohwerte der Register (neue Option _Rohwerte der Register ins Log schreiben_)
+- Neuer Datenpunkt `info.responseMsMax` (längste Antwortzeit im letzten Abfragezyklus)
+- IP-Adresse / Hostname wird in der Admin-Oberfläche geprüft (ungültig = nicht speicherbar) und beim Start bereinigt (z. B. ein Komma am Ende)
+- Neue Instanzen werden deaktiviert angelegt und starten erst nach der Konfiguration
 
 ### 0.1.0 (2026-11-15)
 

@@ -9,6 +9,7 @@
   "Connection": "Connection",
   "Connection type": "Connection type",
   "Create raw values for unmapped registers": "Create raw values for unmapped registers",
+  "Diagnostics": "Diagnostics",
   "Disinfection detection": "Disinfection detection",
   "Electricity meter": "Electricity meter",
   "Factor to kWh": "Factor to kWh",
@@ -24,6 +25,7 @@
   "Installation": "Installation",
   "Installation & writing": "Installation & writing",
   "Live values (registers below 200)": "Live values (registers below 200)",
+  "Log raw register values (debug)": "Log raw register values (debug)",
   "Margin above DHW setpoint (K)": "Margin above DHW setpoint (K)",
   "Max. address gap in a block": "Max. address gap in a block",
   "Max. registers per request": "Max. registers per request",
@@ -37,6 +39,7 @@
   "No automatic detection possible – select the model. The adapter checks the unit capacity register at start.": "No automatic detection possible – select the model. The adapter checks the unit capacity register at start.",
   "Parity": "Parity",
   "Pause between requests (ms)": "Pause between requests (ms)",
+  "Please enter a valid IPv4 address (e.g. 192.168.1.10) or host name": "Please enter a valid IPv4 address (e.g. 192.168.1.10) or host name",
   "Poll interval (s)": "Poll interval (s)",
   "Polling": "Polling",
   "Port": "Port",
@@ -63,6 +66,7 @@
   "Wednesday": "Wednesday",
   "Window (min)": "Window (min)",
   "Write access": "Write access",
+  "Writes every received block as raw numbers at log level debug. Only for troubleshooting – produces many log lines.": "Writes every received block as raw numbers at log level debug. Only for troubleshooting – produces many log lines.",
   "Zone 2 installed": "Zone 2 installed",
   "unknown": "unknown"
 }

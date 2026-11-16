@@ -9,6 +9,7 @@
   "Connection": "Verbindung",
   "Connection type": "Verbindungsart",
   "Create raw values for unmapped registers": "Rohwerte für nicht zugeordnete Register anlegen",
+  "Diagnostics": "Diagnose",
   "Disinfection detection": "Desinfektionserkennung",
   "Electricity meter": "Stromzähler",
   "Factor to kWh": "Faktor auf kWh",
@@ -24,6 +25,7 @@
   "Installation": "Installation",
   "Installation & writing": "Installation & Schreiben",
   "Live values (registers below 200)": "Messwerte (Register unter 200)",
+  "Log raw register values (debug)": "Rohwerte der Register ins Log schreiben (Debug)",
   "Margin above DHW setpoint (K)": "Marge über Warmwasser-Soll (K)",
   "Max. address gap in a block": "Maximale Adresslücke im Block",
   "Max. registers per request": "Maximale Register pro Anfrage",
@@ -37,6 +39,7 @@
   "No automatic detection possible – select the model. The adapter checks the unit capacity register at start.": "Eine automatische Erkennung ist nicht möglich – bitte Modell wählen. Der Adapter prüft beim Start das Register für die Geräteleistung.",
   "Parity": "Parität",
   "Pause between requests (ms)": "Pause zwischen Anfragen (ms)",
+  "Please enter a valid IPv4 address (e.g. 192.168.1.10) or host name": "Bitte eine gültige IPv4-Adresse (z. B. 192.168.1.10) oder einen Hostnamen eingeben",
   "Poll interval (s)": "Abfrageintervall (s)",
   "Polling": "Abfrage",
   "Port": "Port",
@@ -63,6 +66,7 @@
   "Wednesday": "Mittwoch",
   "Window (min)": "Zeitfenster (min)",
   "Write access": "Schreibzugriff",
+  "Writes every received block as raw numbers at log level debug. Only for troubleshooting – produces many log lines.": "Schreibt jeden empfangenen Block als Rohzahlen ins Log (Stufe debug). Nur zur Fehlersuche – erzeugt viele Logzeilen.",
   "Zone 2 installed": "Zone 2 vorhanden",
   "unknown": "unbekannt"
 }

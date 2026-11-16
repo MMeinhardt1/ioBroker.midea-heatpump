@@ -7,15 +7,78 @@ const { startSimulator } = require('./simulator');
 
 const PORT = 15021;
 const REGS = {
-    0: 6, 1: 3, 4: 50, 5: 4096 + 16, 7: 0, 11: 37, 15: 1, 16: 1, 18: 4, 20: 0,
-    100: 45, 101: 3, 104: 30, 105: 35, 107: 65531, 108: 60, 109: 2, 110: 36, 115: 48, 116: 2600, 117: 700,
-    122: 812, 123: 8, 129: 8, 130: 12, 136: 36, 138: 134,
-    143: 0, 144: 50000, 145: 1, 146: 20000, 148: 520, 150: 130, 151: 400,
-    158: 1, 159: 0, 162: 0, 163: 40000, 172: 0, 173: 30000, 176: 0, 177: 10000,
-    187: 41, 198: 16 + 256 + 512 + 1024, 203: 0x3c37, 204: 0x1919, 210: 42177,
-    212: 5, 213: 10, 215: 46, 216: 65526, 220: 65, 221: 210, 222: 15, 229: 5, 230: 2, 231: 25, 232: 65521,
-    233: 65531, 234: 5, 235: 30, 241: 90, 242: 30, 250: 30, 251: 30, 252: 0,
-    265: 45, 266: 30, 267: 65526, 268: 15, 269: 1, 272: 2,
+    0: 6,
+    1: 3,
+    4: 50,
+    5: 4096 + 16,
+    7: 0,
+    11: 37,
+    15: 1,
+    16: 1,
+    18: 4,
+    20: 0,
+    100: 45,
+    101: 3,
+    104: 30,
+    105: 35,
+    107: 65531,
+    108: 60,
+    109: 2,
+    110: 36,
+    115: 48,
+    116: 2600,
+    117: 700,
+    122: 812,
+    123: 8,
+    129: 8,
+    130: 12,
+    136: 36,
+    138: 134,
+    143: 0,
+    144: 50000,
+    145: 1,
+    146: 20000,
+    148: 520,
+    150: 130,
+    151: 400,
+    158: 1,
+    159: 0,
+    162: 0,
+    163: 40000,
+    172: 0,
+    173: 30000,
+    176: 0,
+    177: 10000,
+    187: 41,
+    198: 16 + 256 + 512 + 1024,
+    203: 0x3c37,
+    204: 0x1919,
+    210: 42177,
+    212: 5,
+    213: 10,
+    215: 46,
+    216: 65526,
+    220: 65,
+    221: 210,
+    222: 15,
+    229: 5,
+    230: 2,
+    231: 25,
+    232: 65521,
+    233: 65531,
+    234: 5,
+    235: 30,
+    241: 90,
+    242: 30,
+    250: 30,
+    251: 30,
+    252: 0,
+    265: 45,
+    266: 30,
+    267: 65526,
+    268: 15,
+    269: 1,
+    272: 2,
 };
 // 241 ist im Modell nicht als ungueltig bekannt -> der Adapter soll es lernen
 const INVALID = new Set([200, 214, 223, 228, 236, 239, 241]);
@@ -43,7 +106,7 @@ tests.integration(path.join(__dirname, '..'), {
                     native: {
                         model: 'midea-mhc-v8wd2rn7',
                         connectionType: 'tcprtu',
-                        host: '127.0.0.1',
+                        host: ' 127.0.0.1, ', // typo on purpose: must be cleaned up by the adapter
                         port: PORT,
                         unitId: 1,
                         pollInterval: 5,
@@ -52,6 +115,7 @@ tests.integration(path.join(__dirname, '..'), {
                         requestDelay: 20,
                         retries: 1,
                         maxGap: 0,
+                        logRawValues: true,
                         maxBlock: 60,
                         createRawStates: true,
                         allowWrite: true,
@@ -65,6 +129,7 @@ tests.integration(path.join(__dirname, '..'), {
                     return s ? s.val : undefined;
                 };
                 assert.strictEqual(await get('info.connection'), true, 'verbunden');
+                assert.ok((await get('info.responseMsMax')) >= 0, 'response time state');
                 assert.strictEqual(await get('Temperaturen.Aussen'), -5);
                 assert.strictEqual(await get('Temperaturen.Vorlauf'), 36);
                 assert.strictEqual(await get('Temperaturen.Spreizung'), 6);
@@ -77,15 +142,26 @@ tests.integration(path.join(__dirname, '..'), {
                 assert.strictEqual(await get('Heizstab.IBH1_Leistung_konfiguriert'), 3000);
                 assert.strictEqual(await get('Temperaturen.Vorlauf_Soll'), 36);
                 assert.strictEqual(await get('Temperaturen.Vorlauf_Soll_Quelle'), 'Heizkurve (Reg. 136)');
-                assert.strictEqual(await get('Register.101_Operating_mode'), 3, 'Rohwert fuer nicht zugeordnetes Register');
+                assert.strictEqual(
+                    await get('Register.101_Operating_mode'),
+                    3,
+                    'Rohwert fuer nicht zugeordnetes Register',
+                );
                 assert.strictEqual(await get('Tageswerte.WP intern.Strom_heute'), 0);
-                assert.deepStrictEqual(JSON.parse(String(await get('info.invalidAddresses'))), [241], 'ungueltige Adresse gelernt');
+                assert.deepStrictEqual(
+                    JSON.parse(String(await get('info.invalidAddresses'))),
+                    [241],
+                    'ungueltige Adresse gelernt',
+                );
                 // keine Doppelungen: zugeordnete Register haben keinen Rohwert-Datenpunkt
                 const raw = await harness.objects.getObjectAsync(`${ns}Register.107_T4`);
                 assert.strictEqual(raw, null);
                 const tOut = await get('info.timeouts');
                 const retriesOk = await get('info.retriesOk');
-                assert.ok(tOut > 0 && retriesOk > 0, `ausgelassene Antworten wiederholt (timeouts ${tOut}, ok ${retriesOk})`);
+                assert.ok(
+                    tOut > 0 && retriesOk > 0,
+                    `ausgelassene Antworten wiederholt (timeouts ${tOut}, ok ${retriesOk})`,
+                );
 
                 // Schreiben innerhalb der Grenzen
                 await harness.states.setStateAsync(`${ns}Temperaturen.Warmwasser_Soll`, { val: 52, ack: false });

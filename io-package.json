@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "midea-heatpump",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "news": {
+            "0.2.0": {
+                "en": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "de": "Ausführliches Debug-Log (Antwortzeit je Anfrage, Zusammenfassung je Zyklus, optional Rohwerte), neuer Datenpunkt info.responseMsMax, Prüfung der IP-Adresse im Admin und beim Start, neue Instanzen starten deaktiviert",
+                "ru": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "pt": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "nl": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "fr": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "it": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "es": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "pl": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "uk": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled",
+                "zh-cn": "Detailed debug logging (response time per request, cycle summary, optional raw register dump), new state info.responseMsMax, IP/host validation in admin and at start-up, new instances start disabled"
+            },
             "0.1.0": {
                 "en": "initial release: Midea MHC-V8WD2RN7, statistics, write support",
                 "de": "Erstveröffentlichung: Midea MHC-V8WD2RN7, Statistik, Schreibzugriff",
@@ -116,7 +129,8 @@
         "diMargin": 2,
         "diWeekday": -1,
         "diTime": "",
-        "diWindowMin": 30
+        "diWindowMin": 30,
+        "logRawValues": false
     },
     "objects": [],
     "instanceObjects": [

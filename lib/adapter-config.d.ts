@@ -23,6 +23,7 @@ declare global {
             retries: number;
             maxGap: number;
             maxBlock: number;
+            logRawValues: boolean;
             createRawStates: boolean;
             allowWrite: boolean;
             hasTbh: boolean;

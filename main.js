@@ -11,6 +11,19 @@ const { buildBlocks, decode, encode } = require('./lib/decoder');
 const { getModel } = require('./lib/models');
 const { Statistics } = require('./lib/statistics');
 
+/**
+ * Check an IPv4 address or host name (same rule as the validator in admin/jsonConfig.json).
+ *
+ * @param {string} host - cleaned-up host
+ * @returns {boolean} true if usable
+ */
+function isValidHost(host) {
+    const ipv4 = /^((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
+    const name =
+        /^(?=.{1,253}$)(?!\d+(\.\d+)*$)([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
+    return ipv4.test(host) || name.test(host);
+}
+
 const STAT_TICK_MS = 30_000;
 const FAST_POLL_REPEAT_MS = 5 * 60_000;
 const RECONNECT_AFTER_FAILURES = 3;
@@ -40,6 +53,8 @@ class MideaHeatpump extends utils.Adapter {
         this._last = new Map();
         /** angelegte Objekte (relative ID -> Promise) */
         this._objects = new Map();
+        /** values changed in the current poll cycle (for the debug summary) */
+        this._changed = 0;
         /** zuletzt angezeigte Werte je Register (nach transform) */
         this._values = {};
         /** beschreibbare Datenpunkte: relative ID -> Ziel */
@@ -63,6 +78,11 @@ class MideaHeatpump extends utils.Adapter {
      */
     async onReady() {
         const cfg = this.config;
+        // tolerate typos such as "192.168.1.10," or " http://host/"
+        cfg.host = String(cfg.host || '')
+            .trim()
+            .replace(/^[a-z]+:\/\//i, '')
+            .replace(/^[\s,;]+|[\s,;/]+$/g, '');
         await this.setStateAsync('info.connection', { val: false, ack: true });
 
         this.model = getModel(cfg.model);
@@ -70,8 +90,12 @@ class MideaHeatpump extends utils.Adapter {
             this.log.error(`Unbekanntes Modell "${cfg.model}" – bitte in der Instanz-Konfiguration ein Modell wählen`);
             return;
         }
-        if (cfg.connectionType !== 'serial' && !cfg.host) {
-            this.log.warn('Keine IP-Adresse konfiguriert – bitte die Instanz konfigurieren');
+        if (cfg.connectionType !== 'serial' && !isValidHost(cfg.host)) {
+            this.log.warn(
+                cfg.host
+                    ? `Invalid IP address / host name "${cfg.host}" – please check the instance configuration`
+                    : 'No IP address configured – please configure the instance',
+            );
             return;
         }
         this.log.info(`Modell: ${this.model.label}`);
@@ -234,6 +258,7 @@ class MideaHeatpump extends utils.Adapter {
             ['info.failures', 'Anfragen ohne Antwort (auch nach Wiederholung)', 'number', 'value'],
             ['info.lastTimeout', 'Zeitpunkt der letzten ausgebliebenen Antwort', 'number', 'date'],
             ['info.cycleMs', 'Dauer des letzten Abfragezyklus', 'number', 'value'],
+            ['info.responseMsMax', 'Längste Antwortzeit im letzten Abfragezyklus', 'number', 'value'],
             ['info.invalidAddresses', 'Zur Laufzeit gelernte ungültige Registeradressen (JSON)', 'string', 'json'],
         ];
         for (const [id, name, type, role] of info) {
@@ -243,7 +268,7 @@ class MideaHeatpump extends utils.Adapter {
                 role,
                 read: true,
                 write: false,
-                unit: id === 'info.cycleMs' ? 'ms' : undefined,
+                unit: id === 'info.cycleMs' || id === 'info.responseMsMax' ? 'ms' : undefined,
             });
         }
         await this.setStateAsync('info.model', { val: m.label, ack: true });
@@ -333,6 +358,7 @@ class MideaHeatpump extends utils.Adapter {
             return;
         }
         this._last.set(rel, val);
+        this._changed++;
         this.setStateAsync(rel, { val, ack: true }).catch(e => this.log.warn(`Datenpunkt ${rel}: ${e.message}`));
     }
 
@@ -460,12 +486,16 @@ class MideaHeatpump extends utils.Adapter {
             invalid: this._invalid,
         });
         let complete = true;
+        let okBlocks = 0;
+        this._changed = 0;
         for (const b of blocks) {
             if (this._stopped) {
                 return;
             }
             const ok = await this._readBlock(b);
-            if (!ok) {
+            if (ok) {
+                okBlocks++;
+            } else {
                 complete = false;
             }
             if (!this.modbus.connected || this.modbus.stats.consecutiveFailures >= RECONNECT_AFTER_FAILURES) {
@@ -475,6 +505,12 @@ class MideaHeatpump extends utils.Adapter {
         if (withSettings && complete) {
             this._lastSettingsRead = t0;
         }
+        const maxMs = this.modbus.takeMaxResponseMs();
+        this.log.debug(
+            `Cycle: ${okBlocks}/${blocks.length} blocks ok${withSettings ? ' (incl. settings)' : ''}, ` +
+                `${this._changed} values changed, ${Date.now() - t0} ms, slowest answer ${maxMs} ms`,
+        );
+        this._set('info.responseMsMax', maxMs);
         await this._afterCycle(Date.now() - t0, complete);
 
         if (!this.modbus.connected || this.modbus.stats.consecutiveFailures >= RECONNECT_AFTER_FAILURES) {
@@ -499,6 +535,9 @@ class MideaHeatpump extends utils.Adapter {
     async _readBlock(b) {
         try {
             const data = await this.modbus.readHolding(b.start, b.qty);
+            if (this.config.logRawValues) {
+                this.log.debug(`Raw ${b.start}-${b.start + b.qty - 1}: ${data.join(' ')}`);
+            }
             for (const reg of b.regs) {
                 const d = decode(reg, data, b.start);
                 if (d) {
