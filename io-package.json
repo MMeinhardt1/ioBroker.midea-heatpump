@@ -56,7 +56,7 @@
         "platform": "Javascript/Node.js",
         "icon": "midea-heatpump.png",
         "extIcon": "https://raw.githubusercontent.com/MMeinhardt1/ioBroker.midea-heatpump/main/admin/midea-heatpump.png",
-        "enabled": true,
+        "enabled": false,
         "readme": "https://github.com/MMeinhardt1/ioBroker.midea-heatpump/blob/main/README.md",
         "loglevel": "info",
         "mode": "daemon",

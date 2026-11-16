@@ -71,7 +71,7 @@ class MideaHeatpump extends utils.Adapter {
             return;
         }
         if (cfg.connectionType !== 'serial' && !cfg.host) {
-            this.log.error('Keine IP-Adresse konfiguriert');
+            this.log.warn('Keine IP-Adresse konfiguriert – bitte die Instanz konfigurieren');
             return;
         }
         this.log.info(`Modell: ${this.model.label}`);
