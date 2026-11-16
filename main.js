@@ -346,6 +346,7 @@ class MideaHeatpump extends utils.Adapter {
     async _restoreStatistics() {
         try {
             const states = await this.getStatesAsync('*');
+            /** @type {Record<string, ioBroker.StateValue>} */
             const rel = {};
             const prefix = `${this.namespace}.`;
             for (const [id, st] of Object.entries(states || {})) {
