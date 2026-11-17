@@ -93,6 +93,10 @@ iob add midea-heatpump
 
 ## Changelog
 
+### 0.2.1 (2026-11-17)
+
+- Translations of the admin interface (`admin/i18n`) and of title, description and news in `io-package.json` for es, fr, it, nl, pl, pt, ru, uk and zh-cn (previously English text in these languages)
+
 ### 0.2.0 (2026-11-16)
 
 - Detailed debug logging: response time of every request, one summary line per poll cycle, optional raw register dump (new option _Log raw register values_)

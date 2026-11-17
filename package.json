@@ -1,6 +1,6 @@
 {
   "name": "iobroker.midea-heatpump",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ioBroker adapter for Midea air-to-water heat pumps (M-Thermal / R290 monoblock) via Modbus RTU/TCP",
   "author": {
     "name": "MMeinhardt1"
